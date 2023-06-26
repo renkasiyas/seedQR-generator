@@ -3,7 +3,8 @@
 ## Tested QRs
 
 | QR Content                                    | Blockstream Jade |
-| Bytes Entropy (Compact SeedQR)                | :checked:        |
+| --------------------------------------------- | ---------------- |
+| Bytes Entropy (Compact SeedQR)                | ✅                |
 | BIP39 Seedphrase                              |                  |
 | BIP39 Seedphrase Shorted (4 letters per word) |                  |
 | BIP39 Decimal Indexes                         |                  |
