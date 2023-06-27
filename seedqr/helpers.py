@@ -95,14 +95,14 @@ def from_mnemonic_to_bip85(mnemonic, length, index, passphrase=""):
     return bip85.bip39(xprv, language, length, index)
 
 
-def make_qr(data: Any, show: bool = True, save: Union[bool, str] = False) -> None:
+def make_qr(data: Any, hide: bool = False, save: Union[bool, str] = False) -> None:
     qr = qrcode.QRCode(
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         border=8,
     )
     qr.add_data(data)
     qr.make()
-    if show:
+    if not hide:
         qr.print_tty(out=None)
     if save:
         img = qr.make_image(fill_color="black", back_color="white")

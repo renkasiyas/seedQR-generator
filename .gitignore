@@ -115,4 +115,5 @@ output/*.png
 !output/example-seedQR.png
 seedqr/cli.py
 seedqr/read_qr.py
+seedqr/otp.py
 export.sh

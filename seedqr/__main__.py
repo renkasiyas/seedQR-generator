@@ -27,13 +27,16 @@ def shared_bip_args(parser):
     )
 
 
-def shared_arguments(parser):
+def env_argument(parser):
     parser.add_argument(
         "--env", action="store_true", help="Load USER_INPUT from .env file."
     )
-    parser.add_argument("--print", action="store_true")
+
+
+def shared_arguments(parser):
+    parser.add_argument("--no-info", action="store_true")
+    parser.add_argument("--hide-qr", action="store_true")
     parser.add_argument("--save", action="store_true")
-    parser.add_argument("--show", action="store_true")
     parser.add_argument("--filename")
 
 
@@ -47,7 +50,7 @@ shared_bip_args(bip39_parser)
 shared_arguments(bip39_parser)
 
 bip85_parser = subparsers.add_parser("bip85")
-bip85_parser.add_argument("--master-mnemonic", default=None, type=str)
+bip85_parser.add_argument("--master", default=None, type=str)
 bip85_parser.add_argument("--passphrase", type=str, default="")
 bip85_parser.add_argument(
     "--index", type=int, help="Generate a specific index.", default=-1
@@ -56,6 +59,7 @@ bip85_parser.add_argument(
 # bip85_parser.add_argument("--end", type=int, help="Generate a specific index.")
 shared_bip_args(bip85_parser)
 shared_arguments(bip85_parser)
+env_argument(bip85_parser)
 
 seedQR_parser = subparsers.add_parser("seedQR")
 seedQR_parser.add_argument("--input", default=None, type=str)
@@ -67,6 +71,7 @@ seedQR_parser.add_argument(
 )
 seedQR_parser.add_argument("--binary-index", action="store_true")
 shared_arguments(seedQR_parser)
+env_argument(seedQR_parser)
 
 
 args = parser.parse_args()
@@ -113,11 +118,11 @@ def post_process(args, data, index):
             filename = args.filename
         else:
             filename = f"seedQR-{index:04}"
-    if args.print:
+    if not args.no_info:
         print_data(data)
-    if args.show:
+    if not args.hide_qr:
         print("[bold]Compact SeedQR:[/bold]\n")
-    make_qr(data["bytes"], show=args.show, save=filename)
+    make_qr(data["bytes"], hide=args.hide_qr, save=filename)
 
 
 def seed_has_hints(args, mnemonic):
@@ -150,19 +155,22 @@ def generate_bip39(args):
         else:
             raise ValueError("Hints and places should have same length.")
     elif args.qty > 0:
-        for i in range(args.qty):
-            seed_number = i + 1
-            print(f"Making seed #{seed_number}")
-            strength = int(args.length * 32 / 3)
-            mnemonic = generate_mnemonic(strength)
-            entropy = from_mnemonic_to_entropy(mnemonic)
-            data = process_entropy(entropy)
-            post_process(args, data, seed_number)
+        if args.qty <= 100:
+            for i in range(args.qty):
+                seed_number = i + 1
+                strength = int(args.length * 32 / 3)
+                mnemonic = generate_mnemonic(strength)
+                print(f"BIP39 Seed #{seed_number}: {mnemonic}")
+                entropy = from_mnemonic_to_entropy(mnemonic)
+                data = process_entropy(entropy)
+                post_process(args, data, seed_number)
+        else:
+            raise ValueError("--qty max value: 100.")
 
 
 def make_child_seed(args, index):
     child_mnemonic = from_mnemonic_to_bip85(
-        args.master_mnemonic, args.length, index, args.passphrase
+        args.master, args.length, index, args.passphrase
     )
     print(f"Child Mnemonic #{index}: [bold yellow]{child_mnemonic}[/bold yellow]")
     entropy = from_mnemonic_to_entropy(child_mnemonic)
@@ -171,31 +179,40 @@ def make_child_seed(args, index):
 
 
 def generate_bip85(args):
-    if args.env:
+    if args.master and args.env:
+        raise ValueError(
+            "Using manual --master and --env flag could lead to costly mistakes. Please use just one <input> or --env."
+        )
+    elif args.env:
         if load_dotenv():
-            args.master_mnemonic = os.environ["USER_INPUT"]
+            args.master = os.environ["USER_INPUT"]
         else:
             raise ValueError(".env file not found.")
-    if args.master_mnemonic:
+    if args.master:
         print(
-            f"Generating BIP85 Child Mnemonic Seed from master seedphrase:\n[bold red]{args.master_mnemonic}[/bold red]"
+            f"Generating BIP85 Child Mnemonic Seed from master seedphrase:\n[bold orange]{args.master}[/bold orange]"
         )
         if args.qty:
-            for index in range(args.qty):
-                make_child_seed(args, index)
+            if args.qty <= 100:
+                for index in range(args.qty):
+                    make_child_seed(args, index)
+            else:
+                raise ValueError("--qty max value: 100.")
         elif args.index >= 0:
             make_child_seed(args, args.index)
         else:
             raise ValueError("No --qty or --index provided.")
     else:
-        raise ValueError(
-            "No user input provided, please use --master-mnemonic or --env."
-        )
+        raise ValueError("No user input provided, please use --master or --env.")
 
 
 def generate_seedqr(args):
     print("Generating SeedQR from input")
-    if args.env:
+    if args.input and args.env:
+        raise ValueError(
+            "Using manual --input and --env flag could lead to costly mistakes. Please use just one <input> or --env."
+        )
+    elif args.env:
         if load_dotenv():
             user_input = os.environ["USER_INPUT"]
         else:
@@ -204,7 +221,9 @@ def generate_seedqr(args):
         user_input = args.input
     else:
         raise ValueError("No user input provided, please use --input or --env.")
-    print(f"\nUser input: {user_input}")
+
+    print(f"\nUser input: [red]{user_input}[/red]")
+
     if args.entropy:
         entropy = user_input
     else:
@@ -224,14 +243,13 @@ def generate_seedqr(args):
             raise ValueError(
                 "No type of input provided. Please use --mnemonic, --entropy, --decimal-index, etc."
             )
-        print(f"\nUser input: {user_input}")
         entropy = from_mnemonic_to_entropy(mnemonic)
     data = process_entropy(entropy)
     post_process(args, data, 0)
 
 
 if __name__ == "__main__":
-    print(args)
+    # print(args)
     if args.command == "bip39":
         generate_bip39(args)
     elif args.command == "bip85":
