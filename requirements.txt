@@ -1,5 +1,5 @@
 base58==2.1.1 ; python_version >= "3.9" and python_version < "4.0"
-bip85 @ git+https://github.com/ethankosakovsky/bip85.git@HEAD ; python_version >= "3.9" and python_version < "4.0"
+bip85 @ git+https://github.com/ethankosakovsky/bip85.git; python_version >= "3.9" and python_version < "4.0"
 certifi==2023.5.7 ; python_version >= "3.9" and python_version < "4.0"
 cffi==1.15.1 ; python_version >= "3.9" and python_version < "4.0"
 charset-normalizer==3.1.0 ; python_version >= "3.9" and python_version < "4.0"
