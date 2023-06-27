@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "seedqr"
+version = "0.1.0"
+description = ""
+authors = ["Ren Kasiyas <okasiyas@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pyotp = "^2.8.0"
+qrcode = "^7.4.2"
+mnemonic = "^0.20"
+rich = "^13.4.2"
+bip85 = {git = "https://github.com/ethankosakovsky/bip85.git"}
+pytest = "^7.3.2"
+coverage = "^7.2.7"
+python-dotenv = "^1.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
