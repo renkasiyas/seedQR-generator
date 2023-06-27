@@ -1,7 +1,7 @@
 # Table of contents
 
 - [Table of contents](#table-of-contents)
-- [Initial recommendetations](#initial-recommendetations)
+- [Initial recommendations](#initial-recommendations)
 - [Quick usage](#quick-usage)
 - [SeedQR Generator](#seedqr-generator)
   - [Installation](#installation)
@@ -64,7 +64,7 @@ This scripts lets you:
 ## Installation
 
 ```bash
-git clone https://github.com/renkasiyas/seedQR-generator.git # Clone or fork this repository.
+git clone https://github.com/renkasiyas/seedQR-generator.git && cd seedQR-generator # Clone or fork this repository.
 python3 -m venv .venv # Create virtual environment.
 source .venv/bin/activate # Activate virtual environment.
 python3 -m pip install -r requirements.txt # Install packages.
@@ -314,6 +314,7 @@ poetry run black .
 poetry run isort .
 poetry run pytest seedqr/tests
 poetry export --without-hashes -f requirements.txt -o requirements.txt
+sed 's/@HEAD //g' requirements.txt | tee requirements.txt
 ```
 
 _(I'll implement a `pre-commit` soon.)_
