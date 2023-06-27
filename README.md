@@ -23,12 +23,12 @@
   - [Before commiting](#before-commiting)
 - [Disclaimer](#disclaimer)
 
-# Initial recommendetations
+# Initial recommendations
 
 - This software is for entertainment and educational purposes only.
 - Never use this software with any seedphrases that have real assets tied to them.
 - If you're willing to use a seedphrase with real funds in it, **do it on an offline device**.
-- Read the disclaimer at the end of this README.
+- [Read the disclaimer at the end of this README.](#disclaimer)
 
 
 # Quick usage
@@ -55,6 +55,7 @@ python3 -m seedqr bip39 --qty 10 --no-info --hide
 # SeedQR Generator
 
 This scripts lets you:
+
 - Generate a [Compact SeedQR](https://github.com/SeedSigner/seedsigner/blob/dev/docs/seed_qr/README.md) from provided inputs such as BIP39 12-24-Words Seedphrase. 
 - Deconstruct you input seedphrase in their hexadecimal entropy or BIP39 wordlist indexes.
 - Derive BIP85 Child Seedphrases from 0 to 2147483647 index (and generate their SeedQR) with or withour passphrase.
@@ -62,10 +63,13 @@ This scripts lets you:
 
 ## Installation
 
-1. Clone or fork this repository. `git clone https://github.com/renkasiyas/seeqQR-generator.git`
-2. Create virtual environment. `python3 -m venv .venv`
-3. Activate virtual environment. `source .venv/bin/activate`
-4. Run the appropiate commands, like `python3 -m seedqr bip39 --qty 1 --print --show`
+```bash
+git clone https://github.com/renkasiyas/seedQR-generator.git # Clone or fork this repository.
+python3 -m venv .venv # Create virtual environment.
+source .venv/bin/activate # Activate virtual environment.
+python3 -m pip install -r requirements.txt # Install packages.
+python3 -m seedqr bip39 --qty 1 # Run the appropiate commands
+```
 
 _For developers look at [Contributing](#contributing)_
 
@@ -309,6 +313,7 @@ poetry run <command>
 poetry run black .
 poetry run isort .
 poetry run pytest seedqr/tests
+poetry export --without-hashes -f requirements.txt -o requirements.txt
 ```
 
 _(I'll implement a `pre-commit` soon.)_
