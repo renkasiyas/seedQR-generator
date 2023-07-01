@@ -1,6 +1,5 @@
 import argparse
 import os
-from pprint import pprint as pp
 
 from dotenv import load_dotenv
 from rich import pretty, print
@@ -61,17 +60,17 @@ shared_bip_args(bip85_parser)
 shared_arguments(bip85_parser)
 env_argument(bip85_parser)
 
-seedQR_parser = subparsers.add_parser("seedQR")
-seedQR_parser.add_argument("--input", default=None, type=str)
-seedQR_parser.add_argument("--mnemonic", action="store_true")
-seedQR_parser.add_argument("--entropy", action="store_true")
-seedQR_parser.add_argument("--short", action="store_true")
-seedQR_parser.add_argument(
+qr_parser = subparsers.add_parser("qr")
+qr_parser.add_argument("--input", default=None, type=str)
+qr_parser.add_argument("--mnemonic", action="store_true")
+qr_parser.add_argument("--entropy", action="store_true")
+qr_parser.add_argument("--short", action="store_true")
+qr_parser.add_argument(
     "--decimal-index", action="store_true", help="Decimal indexes start at 0"
 )
-seedQR_parser.add_argument("--binary-index", action="store_true")
-shared_arguments(seedQR_parser)
-env_argument(seedQR_parser)
+qr_parser.add_argument("--binary-index", action="store_true")
+shared_arguments(qr_parser)
+env_argument(qr_parser)
 
 
 args = parser.parse_args()
@@ -254,7 +253,7 @@ if __name__ == "__main__":
         generate_bip39(args)
     elif args.command == "bip85":
         generate_bip85(args)
-    elif args.command == "seedQR":
+    elif args.command == "qr":
         generate_seedqr(args)
     else:
         print("No valid command selected")
